@@ -1,4 +1,4 @@
-from blinker_project import signal
+from blinker import signal
 
 
 def test_should_receive_signal_when_send_signal():
