@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fakeredis = "*"
+redis = "*"
+blinker = "*"
+
+[dev-packages]
+pytest = "*"
+fakeredis = "*"
+
+[requires]
+python_version = "3.6"
