@@ -3,8 +3,7 @@ from .repository import NoticeRepository
 
 class NoticeResource():
 
-    def delete(self):
-        a = 3
+    def delete(self, notice_id: int):
         # ...
-        NoticeRepository().delete()
+        NoticeRepository().delete(notice_id)
         # ...

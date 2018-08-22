@@ -7,7 +7,7 @@ from app.dispatcher import run_event_handling_loop
 if __name__ == '__main__':
 
     with run_event_handling_loop():
-        NoticeResource().delete()
-        NoticeResource().delete()
-        NoticeResource().delete()
+        NoticeResource().delete(3)
+        NoticeResource().delete(4)
+        NoticeResource().delete(5)
 

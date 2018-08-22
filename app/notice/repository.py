@@ -1,8 +1,9 @@
-from app.dispatcher import Dispatcher, Event
+from app.dispatcher import Dispatcher, EventType, Event
 
 
 class NoticeRepository(object):
 
-    def delete(self):
+    def delete(self, notice_id: int):
         print('notice will be deleted.')
-        Dispatcher.source(Event.NOTICE_DELETED)
+        event = Event(EventType.NOTICE_DELETED, {'notice_id': notice_id})
+        Dispatcher.source(event)
