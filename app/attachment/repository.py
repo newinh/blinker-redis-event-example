@@ -1,4 +1,5 @@
-from app.dispatcher import Dispatcher, EventType
+from app.dispatcher import Dispatcher
+from app.event import EventType
 
 
 class AttachmentRepository:

@@ -1,4 +1,5 @@
-from app.dispatcher import Dispatcher, EventType, Event
+from app.event import EventType, Event
+from app.dispatcher import Dispatcher
 
 
 class NoticeRepository(object):
