@@ -1,60 +1,73 @@
-
 import threading
 import time
-# from .redis_publisher import event_broker
-from .event_broker import fredis
-from .notice import deleted_notice_event_broker, modified_notice_event_broker
-
-from app.notice.repository import NoticeRepository
-
-from blinker import signal
-
-
-# register(handler)
-signal('DELETED_NOTICE').connect(NoticeRepository.delete,)
-
-
-def event_handling():
-
-    print("event handling start")
-    while True:
-        # msg = event_broker.get_message(ignore_subscribe_messages=True)
-        msg = fredis.brpop("dbtool:event")
-
-        if msg:
-            print(f"got message : {str(msg)}")
-
-            if msg == b'test':
-                deleted_notice_event_broker.send('DELETE NOTICE EVENT SOURCE')
-
-        time.sleep(0.01)
-        print("loop...")
-
-
-threading.Thread(target=event_handling).start()
-
+from contextlib import contextmanager
+from typing import NewType, Tuple
+from functools import wraps
 from enum import Enum
 
-class EVENTS(Enum):
-    NOTICE_DELTE = 0
+import blinker
+
+from .event_broker import event_broker
+
+EventKey = NewType('EventKey', bytes)
+EventValue = NewType('EventValue', bytes)
 
 
-from typing import TypeVar, Dict
+class Event(Enum):
+    NOTICE_DELETED = 'NOTICE_DELETE'
+    NOTICE_MODIFIED = 'NOTICE_MODIFIED'
 
-EVENT = TypeVar()
-import blinker.signal
+
+@contextmanager
+def run_event_handling_loop():
+    event_handling_thread = threading.Thread(target=event_polling)
+    try:
+        yield event_handling_thread.start()
+    finally:
+        pass
+        event_handling_thread.join()
+
+
+def event_polling() -> None:
+    """
+    * Get event from eternal event broker.(redis)
+    * Source event using internal event signal. (blinker)
+    """
+    print("event polling start")
+    while True:
+        event_msg: Tuple(EventKey, EventValue) = event_broker.brpop("dbtool:event", timeout=3)
+        if not event_msg:
+            time.sleep(0.01)
+            print("loop...")
+            continue
+
+        if event_msg[1].decode() == 'quit':
+            return
+
+        event = Event(event_msg[1].decode())
+
+        if event:
+            print(event)
+            Dispatcher.signal(event.value).send("i'm sender")
+
 
 class Dispatcher(object):
-
-
     signal = blinker.signal
 
-    # TODO: Decorate Function
-    def register(self, event_name):
+    @staticmethod
+    def source(event: Event) -> None:
+        event_broker.lpush('dbtool:event', event.value)
 
+    @classmethod
+    def register(cls, event: Event):
+        def decorator(func):
+            cls.signal(event.value).connect(func)
+            print(f'Event handler registered: [{func}] handle {event}')
 
-        f = 0
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
 
-        signal(event_name).connect(f)
+            return wrapper
 
-        pass
+        return decorator
