@@ -1,13 +1,20 @@
-from app.notice.controller import NoticeResource
-from app.comment.controller import CommentResource
-from app.attachment.controller import AttachmentResource
+import atexit
 
+from threading import Thread
+
+from app.event_broker import event_broker
+from app import app
 from app.dispatcher import run_event_handling_loop
 
-if __name__ == '__main__':
+event_thread = run_event_handling_loop()
 
-    with run_event_handling_loop():
-        NoticeResource().delete(3)
-        NoticeResource().delete(4)
-        NoticeResource().delete(5)
 
+def close_running_thread(t: Thread):
+    event_broker.rpush('dbtool:evet', 'quit')
+    t.join()
+
+
+atexit.register(close_running_thread, event_thread)
+
+
+app.run(host='0.0.0.0', port=5000)

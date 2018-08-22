@@ -32,14 +32,16 @@ def subscribe(event: 'EventType'):
     return decorator
 
 
-@contextmanager
+# @contextmanager
 def run_event_handling_loop():
     event_handling_thread = threading.Thread(target=listen_event)
-    try:
-        yield event_handling_thread.start()
-    finally:
-        pass
-        event_handling_thread.join()
+    event_handling_thread.start()
+    return event_handling_thread
+    # try:
+    #     yield event_handling_thread.start()
+    # finally:
+    #     pass
+    #     event_handling_thread.join()
 
 
 def listen_event() -> None:
