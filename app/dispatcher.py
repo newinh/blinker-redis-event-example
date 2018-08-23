@@ -1,6 +1,5 @@
 import threading
 import time
-from contextlib import contextmanager
 from functools import wraps
 from typing import NewType, Tuple
 
@@ -32,16 +31,10 @@ def subscribe(event: 'EventType'):
     return decorator
 
 
-# @contextmanager
 def run_event_handling_loop():
     event_handling_thread = threading.Thread(target=listen_event)
     event_handling_thread.start()
     return event_handling_thread
-    # try:
-    #     yield event_handling_thread.start()
-    # finally:
-    #     pass
-    #     event_handling_thread.join()
 
 
 def listen_event() -> None:
@@ -51,7 +44,7 @@ def listen_event() -> None:
     """
     print("event polling start")
     while True:
-        raw_event: Tuple(EventKey, EventValue) = event_broker.brpop("dbtool:event", timeout=3)
+        raw_event: Tuple[EventKey, EventValue] = event_broker.brpop("dbtool:event", timeout=3)
 
         if not raw_event:
             time.sleep(0.01)
