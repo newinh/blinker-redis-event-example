@@ -1,11 +1,18 @@
-from redis_project.notice.controller import NoticeResource
-from redis_project.comment.controller import CommentResource
-from redis_project.attachment.controller import AttachmentResource
+from flask import Flask
 
-import redis_project.dispatcher
+from app.notice.controller import NoticeResource
+from app.comment.controller import CommentResource
+from app.attachment.controller import AttachmentResource
 
-if __name__ == '__main__':
-    result = NoticeResource().delete()
-    NoticeResource().delete()
-    NoticeResource().delete()
-    print(result)
+app = Flask(__name__)
+
+
+@app.route("/")
+def index():
+    return "index"
+
+
+@app.route("/notices/<int:notice_id>", methods=['DELETE'])
+def delete_notice(notice_id: int):
+    NoticeResource().delete(notice_id)
+    return "notice_delete"

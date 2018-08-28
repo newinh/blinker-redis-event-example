@@ -1,7 +1,9 @@
+from app import dispatcher
+from app.event import EventType
 
 
 class AttachmentRepository:
 
-    def delete(self):
-        a = 3
-        print('attachment deleted')
+    @dispatcher.subscribe(EventType.NOTICE_DELETED)
+    def delete_by_notice_id(self, notice_id: int):
+        print(f'Attachments in [{notice_id}] Notice deleted')

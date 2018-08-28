@@ -1,8 +1,9 @@
-from ..notice import deleted_notice_event_broker
+from app import dispatcher
+from app.event import EventType
+
 
 class CommentRepository:
 
-    @dispatch.register('EVNET_NAME')
-    def delete(self):
-        a = 3
-        print('comment deleted')
+    @dispatcher.subscribe(EventType.NOTICE_DELETED)
+    def delete_by_notice_id(self, notice_id: int):
+        print(f'Comments in [{notice_id}] Notice deleted')

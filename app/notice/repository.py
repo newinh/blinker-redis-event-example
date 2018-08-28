@@ -1,13 +1,10 @@
-from . import modified_notice_event_broker, deleted_notice_event_broker
-
-from app.event_broker import fredis
+from app.event import EventType, Event
+from app import dispatcher
 
 
 class NoticeRepository(object):
-    def delete(self):
+
+    def delete(self, notice_id: int):
         print('notice will be deleted.')
-        from blinker import signal
-        signal('').send()
-        # deleted_notice_event_broker.send('delete_notice')
-        fredis.lpush("dbtool:event", "test")
-        pass
+        event = Event(EventType.NOTICE_DELETED, {'notice_id': notice_id})
+        dispatcher.source(event)

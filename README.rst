@@ -33,9 +33,18 @@ Dependencies Installation
 
     $ docker run --name some-redis -d -p 6379:6379 redis
 
+How to run
+==========
 
+.. code-block:: shell
 
+    $ python run.py
 
+And then, Simple call
+
+.. code-block:: shell
+
+    $ curl -X DELETE localhost:5000/notices/3
 
 Architecture
 ============
